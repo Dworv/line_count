@@ -1,6 +1,7 @@
 use std::env::args;
 use std::error::Error;
-use std::fs;
+use std::fs::File;
+use std::io::{prelude::*, BufReader};
 
 fn get_args() -> Result<Vec<String>, &'static str> {
     let args: Vec<String> = args().collect();
@@ -14,9 +15,11 @@ fn get_args() -> Result<Vec<String>, &'static str> {
 pub fn run() -> Result<(), Box<dyn Error>> {
     let args = get_args()?;
     let filename = args[1].clone();
-    let file = fs::read_to_string(&filename)?;
-    let lines: Vec<&str> = file.lines().collect();
-    let line_num = lines.len();
+    let file = File::open(&filename)?;
+    let mut line_num: u32 = 0;
+    for _ in BufReader::new(file).lines() {
+        line_num += 1;
+    }
     let plural: &str;
     if line_num == 1 {
         plural = "";
